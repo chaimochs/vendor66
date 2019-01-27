@@ -1,25 +1,26 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import { Switch, Route, BrowserRouter } from "react-router-dom";
+import Header from './Components/header'
+import Footer from './Components/footer'
+import ProductEditor from './Components/productEditor'
 
-class App extends Component {
+class App extends React.Component {
+  state = {};
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+       <Header />
+       <BrowserRouter>
+          <Switch>
+            <Route
+              exact path= "/"
+              component={ProductEditor}
+            />
+          </Switch>
+       </BrowserRouter>
+       <Footer />
       </div>
     );
   }
