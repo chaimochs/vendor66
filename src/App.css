@@ -30,3 +30,22 @@
     transform: rotate(360deg);
   }
 }
+
+.form-group {
+  margin: 0 auto;
+  width: 25%;
+  
+}
+
+.productGen{
+  text-align:center;
+}
+
+.categories-box{
+  border: solid 1px rgb(126, 63, 63);
+}
+
+.img-thumbnail{
+  width: 200px;
+  height:200px;
+}
