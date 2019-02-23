@@ -1,0 +1,59 @@
+{
+    "name": "",
+    "description": "",
+    "site": "",
+    "affiliate": "",
+    "longDescription": "",
+    "categories": [
+        {
+            "value": "Accounting",
+            "label": "Accounting"
+        }, {
+            "value": "CRM",
+            "label": "CRM"
+        }
+    ],
+    "category": [
+        {
+            "value": "Accounting",
+            "label": "Accounting"
+        }
+    ],
+    "integrations": [
+        {
+            "value": "Box",
+            "label": "Box"
+        }, {
+            "value": "Dropbox",
+            "label": "Dropbox"
+        }
+    ],
+    "integration": [
+        {
+            "value": "Box",
+            "label": "Box"
+        }, {
+            "value": "Dropbox",
+            "label": "Dropbox"
+        }
+    ],
+    "logo": "",
+    "screen": "",
+    "screenshots": [],
+    "paymentOptions": [
+        {
+            "value": "Visa",
+            "label": "Visa"
+        }, {
+            "value": "MasterCard",
+            "label": "MasterCard"
+        }, {
+            "value": "Diners Club",
+            "label": "Diners Club"
+        }, {
+            "value": "PayPal",
+            "label": "PayPal"
+        }
+    ],
+    "payment": []
+}

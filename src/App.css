@@ -49,3 +49,20 @@
   width: 200px;
   height:200px;
 }
+
+.footer {
+  height: 4rem; 
+  background-color: #cc5945;
+}
+
+.header {
+  background-color: #cc5945;
+}
+
+.payments-select {
+    display: inline-block
+}
+
+.payments-list {
+  min-width: 50%;
+}

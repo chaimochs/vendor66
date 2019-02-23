@@ -1,7 +1,13 @@
 import React from 'react';
-const shortId = require('short-id');
+import Select from 'react-select';
+import {decorate, observable} from "mobx"
+import {observer} from "mobx-react"
+import { push_uniq } from 'terser';
+import axios from 'axios';
 
+const shortId = require('short-id');
 const _ = require("lodash");
+let formdata = {}
 
 class ProductEditor extends React.Component {
 
@@ -11,29 +17,61 @@ class ProductEditor extends React.Component {
         site: '',
         affiliate: '',
         longDescription: '',
+        category: [],
+        integration: [],
+        payment: [],
+        logo: '',
+        screen: '',
+        screenshots: [],
+
         categories: [
             {
                 id: 1,
-                name: 'Accounting'
+                label: 'Accounting',
+                value: 'Accounting'
             }, {
                 id: 2,
-                name: 'CRM'
+                label: 'CRM',
+                value: 'CRM'
             }
         ],
         integrations: [
             {
-                id: 1,
-                name: 'Box'
+                value: 'Box',
+                label: 'Box',
+                
             }, {
                 id: 2,
-                name: 'Dropbox'
+                label: 'Dropbox',
+                value: 'Dropbox'
             }
         ],
-        logo: '',
-        screen: '',
-        screenshots: [],
-        payment: ''
+        paymentOptions: [
+            {
+                value: 'Visa',
+                label: 'Visa'
+            }, {
+                value: 'MasterCard',
+                label: 'MasterCard'
+            }, {
+                value: 'Diners Club',
+                label: 'Diners Club'
+            }, {
+                value: 'PayPal',
+                label: 'PayPal'
+            }
+        ]
     };
+
+    setName             = e => this.setState({name: e.target.value})
+    setDescription      = e => this.setState({description: e.target.value})
+    setSite             = e => this.setState({site: e.target.value})
+    setAffiliate        = e => this.setState({affiliate: e.target.value})
+    setLongDescription  = e => this.setState({longDescription: e.target.value})
+
+    setCategory         = category      => this.setState({category: category})
+    setIntegration      = integration   => this.setState({integration: integration})
+    setPayment          = payment       => this.setState({payment: payment})
 
     updateValue(e) {
         this.setState({
@@ -56,36 +94,80 @@ class ProductEditor extends React.Component {
             ],
             screen: ''
         })
-
     }
 
     removeScreen = (screenshot) => {
-
         const data = this
             .state
             .screenshots
             .filter(i => i.id !== screenshot.id)
-
         this.setState({screenshots: data})
         return
     }
 
+        handleSubmit = e => {
+            e.preventDefault()
+            console.log(this.state)
+            console.log(JSON.stringify(this.state));
+            const obj = {
+                name: this.state.name,
+                description: this.state.description,
+                site: this.state.site,
+                affiliate: this.state.affiliate,
+                longDescription: this.state.longDescription,
+                category: this.state.category,
+                integration: this.state.integration,
+                logo: this.state.logo,
+                screenshots: this.state.screenshots,
+                payment: this.state.payment
+                // payment: this.state.payment.map(p => p.value)
+              };
+              console.group(obj)
+              axios.post('http://localhost:4000/formInfo/add', obj)
+                  .then(res => console.log(res.data))
+                  .catch(error => {
+                    console.log(error.response)
+                });
+              
+              this.setState({
+                name: '',
+                description: '',
+                site: '',
+                affiliate: '',
+                longDescription: '',
+                category: [],
+                integration: [],
+                logo: '',
+                screenshots: [],
+                payment: []
+              })
+        }
+      
     render() {
+        const {payment}     = this.state;
+        const {category}    = this.state;
+        const {integration} = this.state;
+
+
         return (
             <div className="productGen">
-                <form>
-                    <div className="form-group">
-                        <label for="fullName">
+                <form onSubmit={this.handleSubmit.bind(this)}>
+
+                     <div className="form-group">
+                        <label >
                             Full Product Name
                         </label>
                         <input
+                            htmlFor='fullName'
                             type="text"
                             className="form-control"
+                            name='fullName'
                             id="fullName"
                             placeholder="Please enter the full name of your product"
                             value={this.state.name}
-                            onChange={e => this.setState({name: e.target.value})}/>
-                    </div>
+                            onChange={this.setName}
+                            />
+                  </div> 
 
                     <div className="form-group">
                         <label for="shortDesc">
@@ -99,7 +181,7 @@ class ProductEditor extends React.Component {
                             id="shortDesc"
                             placeholder="Please enter a short description of you product"
                             value={this.state.description}
-                            onChange={e => this.setState({description: e.target.value})}></textarea>
+                            onChange={this.setDescription}></textarea>
                     </div>
 
                     <div className="form-group">
@@ -112,7 +194,7 @@ class ProductEditor extends React.Component {
                             id="site"
                             placeholder="Enter your product's website URL"
                             value={this.state.site}
-                            onChange={e => this.setState({site: e.target.value})}/>
+                            onChange={this.setSite}/>
                     </div>
 
                     <div className="form-group">
@@ -124,7 +206,7 @@ class ProductEditor extends React.Component {
                             className="form-control"
                             id="url"
                             value={this.state.affiliate}
-                            onChange={e => this.setState({affiliate: e.target.value})}/>
+                            onChange={this.setAffiliate}/>
                     </div>
 
                     <div className="form-group">
@@ -136,10 +218,22 @@ class ProductEditor extends React.Component {
                             cols="50"
                             placeholder="Please describe your product in detail:"
                             value={this.state.longDescription}
-                            onChange={e => this.setState({longDescription: e.target.value})}></textarea>
+                            onChange={this.setLongDescription}></textarea>
                     </div>
 
-                    <div className='form-group categories-box'>
+                    <div className="form-group">
+                     <h4>Categories</h4>
+                     <Select 
+                         className="payments-select payments-list"
+                         value={category}
+                         onChange={this.setCategory}
+                         options={this.state.categories}
+                         placeholder="Please select category"
+                         isMulti
+                         />
+                    </div>
+
+                    {/* <div className='form-group categories-box'>
                         {this
                             .state
                             .categories
@@ -152,14 +246,27 @@ class ProductEditor extends React.Component {
                                             className="form-check-input"
                                             id={category.id}
                                             name={category.name}
-                                            checked={'false'}
+                                            // checked={'false'}
+                                            onClick={this.setCategory.bind(this, category)}
                                             type="checkbox"/> {category.name}
                                     </div>
                                 );
                             })}
+                    </div> */}
+
+                    <div className="form-group">
+                     <h4>Integrations</h4>
+                     <Select 
+                         className="payments-select payments-list"
+                         value={integration}
+                         onChange={this.setIntegration}
+                         options={this.state.integrations}
+                         placeholder="Please select an integration"
+                         isMulti
+                         />
                     </div>
 
-                    <div className='form-group integrations-box'>
+                    {/* <div className='form-group integrations-box'>
                         {this
                             .state
                             .integrations
@@ -177,7 +284,7 @@ class ProductEditor extends React.Component {
                                     </div>
                                 );
                             })}
-                    </div>
+                    </div> */}
 
                     <div className="text-center form-group">
                         <img src={this.state.logo} className="rounded" alt="this.state.logo"/>
@@ -217,6 +324,7 @@ class ProductEditor extends React.Component {
                             })
 }
                     </div>
+
                     <div className="form-group">
                         <form onClick={this.addScreenshots}>
                             <input
@@ -227,37 +335,35 @@ class ProductEditor extends React.Component {
                                 onChange={e => this.setState({screen: e.target.value})}/>
                             <input type="button" value="Save"/>
                         </form>
-                    </div>
 
-                    <button type="submit" className="btn btn-primary">Submit</button>
+                        {/* <button type="submit" className="btn btn-primary">Submit</button> */}
+                    </div>
 
                     <div className="form-group">
-                        <div className="dropdown">
-                            <a
-                                className="btn btn-secondary dropdown-toggle"
-                               value={this.state.payment}
-                                role="button"
-                                id= "dropdownMenuLink"
-                                data-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">
-                                Payment Method
-                            </a>
-                            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <a className="dropdown-item" href="#">Visa</a>
-                                <a className="dropdown-item" href="#">MasterCard</a>
-                                <a className="dropdown-item" href="#">American Express</a>
-                                <a className="dropdown-item" href="#">Diner's Club</a>
-                                <a className="dropdown-item" href="#">PayPal</a>
-                            </div>
+                            <h4>Payment Methods</h4>
+                            <Select 
+                                className="payments-select payments-list"
+                                value={payment}
+                                onChange={this.setPayment}
+                                options={this.state.paymentOptions}
+                                placeholder="Please select payment method"
+                                isMulti
+                                />
+                            <button
+                                type="button"
+                                className="btn btn-danger btn-sm  payments-select"
+                                style={{
+                                'display': 'inline-block',
+                                'margin-left': 10
+                            }}>
+                                Add
+                            </button>
                         </div>
-                    </div>
-
+                
+                <button>Submit Form</button>
                 </form>
-
             </div>
         );
     }
 }
-
-export default ProductEditor;
+export default ProductEditor
